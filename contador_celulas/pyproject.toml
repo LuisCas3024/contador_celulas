@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "contador_celulas"
+version = "0.1.0"
+description = "Conteo automático de células en imágenes de microscopía mediante segmentación Watershed con Distance Transform."
+readme = "README.md"
+requires-python = ">=3.11"
+
+authors = [
+  { name = "Luis Casillas" },
+  { name = "Micaela Trujillo" },
+  { name = "César Girón" },
+  { name = "Uriel Villalobos" },
+]
+
+license = { text = "MIT" }
+
+keywords = [
+  "células", "microscopía", "segmentación", "watershed",
+  "procesamiento de imagen", "visión por computadora", "biomedical"
+]
+
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: Image Processing",
+  "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+
+dependencies = [
+  "opencv-python>=4.8",
+  "numpy>=1.24",
+  "scipy>=1.10",
+  "matplotlib>=3.7",
+]
+
+[tool.setuptools.package-data]
+contador_celulas = ["imagenes/*.jpeg", "imagenes/*.jpg", "imagenes/*.png"]
+
+[project.urls]
+Homepage   = "https://github.com/LuisCas3024/contador_celulas"
+Repository = "https://github.com/LuisCas3024/contador_celulas"

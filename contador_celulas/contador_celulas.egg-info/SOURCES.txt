@@ -1,0 +1,14 @@
+README.md
+pyproject.toml
+contador_celulas/__init__.py
+contador_celulas/procesamiento.py
+contador_celulas.egg-info/PKG-INFO
+contador_celulas.egg-info/SOURCES.txt
+contador_celulas.egg-info/dependency_links.txt
+contador_celulas.egg-info/requires.txt
+contador_celulas.egg-info/top_level.txt
+contador_celulas/imagenes/Celula1.jpeg
+contador_celulas/imagenes/Celula2.jpeg
+contador_celulas/imagenes/Celula3.jpeg
+contador_celulas/imagenes/Celula4.jpeg
+contador_celulas/imagenes/__init__.py

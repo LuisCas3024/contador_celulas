@@ -1,0 +1,186 @@
+Metadata-Version: 2.4
+Name: contador_celulas
+Version: 0.1.0
+Summary: Conteo automático de células en imágenes de microscopía mediante segmentación Watershed con Distance Transform.
+Author: Luis Casillas, Micaela Trujillo, César Girón, Uriel Villalobos
+License: MIT
+Project-URL: Homepage, https://github.com/LuisCas3024/contador_celulas
+Project-URL: Repository, https://github.com/LuisCas3024/contador_celulas
+Keywords: células,microscopía,segmentación,watershed,procesamiento de imagen,visión por computadora,biomedical
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Scientific/Engineering :: Image Processing
+Classifier: Topic :: Scientific/Engineering :: Medical Science Apps.
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: opencv-python>=4.8
+Requires-Dist: numpy>=1.24
+Requires-Dist: scipy>=1.10
+Requires-Dist: matplotlib>=3.7
+
+# contador_celulas 🔬
+
+Librería Python para el **conteo automático de células** en imágenes de microscopía.  
+Implementa un pipeline completo de procesamiento de imagen usando segmentación **Watershed con Distance Transform**.
+
+Desarrollada por estudiantes de Ingeniería Biomédica de la  
+**Universidad Autónoma de Aguascalientes**.
+
+---
+
+## Autores
+
+| Nombre | 
+|--------|
+| Luis Casillas |
+| Micaela Trujillo |
+| César Girón |
+| Uriel Villalobos |
+
+---
+
+## Instalación
+
+```bash
+pip install git+https://github.com/tu_usuario/contador_celulas.git
+```
+
+> Requiere Python 3.11 o superior.
+
+---
+
+## Uso rápido
+
+### Pipeline completo (recomendado)
+
+```python
+from contador_celulas import contar_celulas
+import matplotlib.pyplot as plt
+import cv2
+
+# Ejecutar el pipeline completo
+resultado = contar_celulas(
+    ruta_imagen = "ruta/a/Celula1.jpeg",
+    dist_thresh = 0.4,   # 0.5–0.7 para células muy separadas
+    area_min    = 600,   # bajar a 400 para núcleos más pequeños
+    radio_fft   = 80,
+    verbose     = True
+)
+
+print("Células detectadas:", resultado["conteo"])
+
+# Visualizar resultado
+plt.imshow(cv2.cvtColor(resultado["img_resultado"], cv2.COLOR_BGR2RGB))
+plt.title(f'{resultado["conteo"]} células detectadas')
+plt.axis("off")
+plt.show()
+```
+
+### Usar funciones individuales
+
+```python
+import cv2
+from contador_celulas import (
+    rgb_a_gris,
+    transformacion_log,
+    ajuste_lineal,
+    filtro_pasa_bajas_fft,
+    sobel_propio,
+)
+
+img = cv2.imread("celula.jpeg")
+
+# Paso a paso
+gris      = rgb_a_gris(img)
+gris_log  = transformacion_log(gris)
+gris_fft  = filtro_pasa_bajas_fft(gris_log, radio=80)
+bordes    = sobel_propio(gris_fft)
+```
+
+---
+
+## Funciones disponibles
+
+| Función | Descripción |
+|---------|-------------|
+| `contar_celulas(ruta, ...)` | Pipeline completo: carga → procesamiento → conteo |
+| `rgb_a_gris(img)` | Conversión BGR → grises (luminancia ITU-R BT.601) |
+| `transformacion_log(img)` | Realce logarítmico de zonas oscuras |
+| `ajuste_lineal(img)` | Estiramiento del histograma a [0, 255] |
+| `filtro_pasa_bajas_fft(img, radio)` | Filtro pasa bajas circular en dominio FFT |
+| `sobel_propio(img)` | Gradiente Sobel propio (convolución con scipy) |
+
+---
+
+## Parámetros de contar_celulas
+
+| Parámetro | Tipo | Default | Descripción |
+|-----------|------|---------|-------------|
+| `ruta_imagen` | str | — | Ruta a la imagen (JPEG, PNG, BMP, TIFF) |
+| `dist_thresh` | float | 0.4 | Umbral Distance Transform. Rango: 0.4–0.7 |
+| `area_min` | int | 600 | Área mínima en px para contar como célula |
+| `radio_fft` | int | 80 | Radio del filtro pasa bajas (px) |
+| `kernel_sep` | int | 5 | Tamaño del kernel morfológico |
+| `verbose` | bool | True | Imprime el conteo en consola |
+
+### Guía de ajuste rápido
+
+| Situación | Parámetro a ajustar |
+|-----------|---------------------|
+| Sobreconteo (divide una célula en dos) | Subir `dist_thresh` → 0.5–0.6 |
+| Subconteo (agrupa dos células en una) | Bajar `dist_thresh` → 0.3–0.4 |
+| Detecta ruido/fragmentos como células | Subir `area_min` → 800–1000 |
+| Pierde células pequeñas | Bajar `area_min` → 300–400 |
+
+---
+
+## Dependencias
+
+```
+opencv-python >= 4.8
+numpy         >= 1.24
+scipy         >= 1.10
+matplotlib    >= 3.7
+```
+
+---
+
+## Pipeline interno
+
+```
+Imagen original
+     │
+     ▼
+RGB → Grises  (luminancia ITU-R)
+     │
+     ▼
+CLAHE  (ecualización adaptativa, clipLimit=2.5)
+     │
+     ▼
+Transformación logarítmica
+     │
+     ▼
+Filtro pasa bajas FFT  (máscara circular)
+     │
+     ▼
+Desenfoque gaussiano  (7×7, σ=1.5)
+     │
+     ▼
+Umbral Otsu inverso
+     │
+     ▼
+Morfología: Cierre → Apertura
+     │
+     ▼
+Distance Transform + Watershed
+     │
+     ▼
+Conteo por área mínima  ──► Resultado
+```
+
+---
+
+## Licencia
+
+MIT License — libre para uso académico y personal.
